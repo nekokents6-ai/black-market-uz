@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACK MARKET UZ — Demo checkout</title>
+<style>
+:root{--bg:#090909;--panel:#151515;--panel2:#1e1e1e;--red:#e3232d;--muted:#aaa;--line:#303030;--white:#f7f7f7}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#321014 0,transparent 32%),var(--bg);color:var(--white);font:16px/1.5 Arial,sans-serif}
+header{border-bottom:1px solid var(--line);padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:1.5px}.brand span{color:var(--red)}.tag{font-size:12px;border:1px solid #673036;border-radius:20px;padding:5px 10px;color:#ff9ba0}
+main{max-width:1100px;margin:auto;padding:34px 18px 70px}.hero{margin-bottom:28px}.eyebrow{color:#ff777d;text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:bold}h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin:10px 0}p{color:#c4c4c4}.notice{border:1px solid #6c4c20;background:#21190d;color:#ffe0a3;padding:12px 14px;border-radius:12px;margin:18px 0 26px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.product{background:linear-gradient(145deg,#1c1c1c,#111);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;min-height:210px}.coin{font-size:13px;color:#ff777d;font-weight:bold}.amount{font-size:28px;font-weight:900;margin:12px 0 4px}.price{color:#fff;font-size:20px;font-weight:bold}.product small{color:var(--muted)}button{border:0;border-radius:10px;padding:12px 15px;background:var(--red);color:white;font-weight:bold;cursor:pointer;font-size:15px}button:hover{filter:brightness(1.12)}.product button{margin-top:auto;width:100%}.secondary{background:#292929;border:1px solid #414141}.section-title{margin:34px 0 14px;font-size:22px}.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.step b{display:block;margin-bottom:5px}.muted{font-size:13px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:22px;text-align:center;color:#888;font-size:12px}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#000c;z-index:10;align-items:center;justify-content:center;padding:16px}.modal-backdrop.open{display:flex}.modal{width:min(100%,480px);background:#151515;border:1px solid #484848;border-radius:18px;padding:22px;box-shadow:0 25px 90px #000}.modal h2{margin:0 0 6px}.summary{background:#202020;border-radius:12px;padding:13px;margin:16px 0}.row{display:flex;justify-content:space-between;gap:10px;margin:5px 0}.methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.method{background:#222;border:1px solid #444;border-radius:12px;padding:12px;text-align:left}.method.active{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}.method span{display:block;color:#aaa;font-size:12px;font-weight:normal;margin-top:4px}.status{display:none;border:1px solid #4c6b45;background:#142015;border-radius:12px;padding:13px;margin-top:14px;color:#c9f5c5}.status.show{display:block}.actions{display:flex;gap:10px;margin-top:14px}.actions button{flex:1}.label{display:block;font-size:13px;color:#ccc;margin-top:10px}input{width:100%;margin-top:5px;background:#0d0d0d;color:white;border:1px solid #444;border-radius:9px;padding:11px}
+</style>
+</head>
+<body>
+<header><div class="brand">BLACK <span>MARKET</span> UZ</div><div class="tag">DEMO CHECKOUT · БЕЗ РЕАЛЬНЫХ ПЛАТЕЖЕЙ</div></header>
+<main>
+<section class="hero"><div class="eyebrow">Black Coin Store</div><h1>Пополняй баланс<br>в пару кликов.</h1><p>Выбери пакет BC, чтобы проверить демонстрационное оформление заказа.</p></section>
+<div class="notice">⚠️ Это учебная версия. Кнопка не открывает Payme или Google Pay, деньги не списываются, платёж не проводится, а BC не выдаются.</div>
+<div class="grid" id="products"></div>
+<h2 class="section-title">Как проходит тест</h2>
+<div class="how">
+<div class="step"><b>01 · Выбор пакета</b><span class="muted">Выбери количество BC и проверь цену.</span></div>
+<div class="step"><b>02 · Выбор способа</b><span class="muted">Посмотри, как будет выглядеть выбор Payme / Google Pay.</span></div>
+<div class="step"><b>03 · Тестовый статус</b><span class="muted">Увидишь отметку «Демо завершено», а не подтверждение настоящей оплаты.</span></div>
+</div>
+</main>
+<footer>BLACK MARKET UZ · Учебный прототип · Не является платёжной страницей</footer>
+<div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<div class="modal">
+<h2 id="modalTitle">Оформление заказа</h2><p class="muted">Демонстрация интерфейса — без списания средств.</p>
+<div class="summary"><div class="row"><span>Пакет</span><b id="chosenAmount">—</b></div><div class="row"><span>Сумма</span><b id="chosenPrice">—</b></div><div class="row"><span>Номер заказа</span><b id="orderId">—</b></div></div>
+<div class="muted">Выбери способ оплаты для просмотра тестового сценария:</div>
+<div class="methods">
+<button class="method active" data-method="Payme">Payme<span>Тестовый макет</span></button>
+<button class="method" data-method="Google Pay">Google Pay<span>Тестовый макет</span></button>
+</div>
+<label class="label">Игровой ник (необязательно)<input id="nickname" maxlength="32" placeholder="Например, Player123"></label>
+<div class="status" id="status">✓ Демо завершено. Реальный платёж не выполнялся, заказ не оплачен, BC не выданы.</div>
+<div class="actions"><button class="secondary" id="close">Закрыть</button><button id="testPay">Проверить демо</button></div>
+</div></div>
+<script>
+const products=[
+ {bc:80,price:16100},{bc:300,price:60300},{bc:500,price:100600},
+ {bc:900,price:181100},{bc:3600,price:603800},{bc:9100,price:1408700},{bc:15400,price:2213800}
+];
+const fmt=n=>new Intl.NumberFormat('ru-RU').format(n)+' сум';
+const root=document.getElementById('products');
+products.forEach(p=>{const card=document.createElement('article');card.className='product';card.innerHTML=`<div class="coin">BLACK COIN</div><div class="amount">${p.bc.toLocaleString('ru-RU')} BC</div><div class="price">${fmt(p.price)}</div><small>Демо-пакет</small><div style="height:18px"></div><button>Выбрать пакет</button>`;card.querySelector('button').addEventListener('click',()=>openCheckout(p));root.appendChild(card)});
+let selectedMethod='Payme', selectedProduct=null;
+function openCheckout(p){selectedProduct=p;document.getElementById('chosenAmount').textContent=p.bc.toLocaleString('ru-RU')+' BC';document.getElementById('chosenPrice').textContent=fmt(p.price);document.getElementById('orderId').textContent='DEMO-'+Math.random().toString(36).slice(2,8).toUpperCase();document.getElementById('nickname').value='';document.getElementById('status').classList.remove('show');document.getElementById('backdrop').classList.add('open')}
+document.querySelectorAll('.method').forEach(btn=>btn.addEventListener('click',()=>{selectedMethod=btn.dataset.method;document.querySelectorAll('.method').forEach(x=>x.classList.toggle('active',x===btn));document.getElementById('status').classList.remove('show')}));
+document.getElementById('testPay').addEventListener('click',()=>{document.getElementById('status').classList.add('show');document.getElementById('status').textContent='✓ Демо завершено через '+selectedMethod+'. Реальный платёж не выполнялся, заказ не оплачен, BC не выданы.'});
+document.getElementById('close').addEventListener('click',()=>document.getElementById('backdrop').classList.remove('open'));
+document.getElementById('backdrop').addEventListener('click',e=>{if(e.target.id==='backdrop')e.currentTarget.classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('backdrop').classList.remove('open')});
+</script>
+</body>
+</html>
