@@ -54,7 +54,7 @@ footer{padding:35px 0 22px;background:#1d1c1a;color:white}.footer-grid{display:f
 <section class="order-strip" id="contacts"><div class="container order-row"><div><h2>Есть вопросы или хочешь заказать?</h2><p>Добавь блюда в корзину и подготовь заказ. Контакты заведения можно добавить сюда.</p></div><button class="primary" onclick="openCart()">Открыть корзину →</button></div></section>
 </main>
 <footer><div class="container"><div class="footer-grid"><div class="footer-brand"><a class="logo" href="#"><span class="logo-mark">🍕</span><span>ORANGE<small style="color:#aaa">PIZZA & FAST FOOD</small></span></a><p>Вкусная пицца и фастфуд рядом с домом. ORANGE — самостоятельный проект. Меню и цены использованы как справочный образец по открытым данным Mix Burger.</p></div><div class="footer-links"><a href="#menu">Меню</a><a href="#about">О нас</a><a href="#contacts">Контакты</a></div></div><div class="footer-bottom"><span>© 2026 ORANGE Pizza & Fast Food · Каталог составлен по открытым данным Mix Burger</span><span>*Доставка и время работы уточняются у заведения.</span></div></div></footer>
-<div class="overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()"><div class="drawer"><div class="drawer-head"><h2>Твой заказ 🛒</h2><button class="close" onclick="closeCart()">×</button></div><div id="cartLines"></div><div class="cart-total"><span>Итого</span><span id="cartTotal">0 сум</span></div><div class="form-grid"><label>Имя<input id="customerName" placeholder="Как к тебе обращаться?"></label><label>Телефон для связи<input id="customerPhone" type="tel" placeholder="+998 ..."></label><label>Получение заказа<select id="fulfillment"><option value="Доставка">Доставка</option><option value="Самовывоз">Самовывоз</option></select></label><label>Адрес доставки<textarea id="customerAddress" placeholder="Город, улица, дом, квартира, ориентир"></textarea></label><label>Способ оплаты<select id="paymentMethod"><option value="Наличными при получении">Наличными при получении</option><option value="Картой курьеру (если доступно)">Картой курьеру (если доступно)</option><option value="Click (будет подключён позже)">Click (будет подключён позже)</option><option value="Payme (будет подключён позже)">Payme (будет подключён позже)</option></select></label><label>Комментарий курьеру<textarea id="customerComment" placeholder="Подъезд, этаж, домофон или другие пожелания"></textarea></label></div><div class="geo-panel"><div><b>📍 Геолокация для курьера</b><p id="geoStatus">Не отправлена. Нажми кнопку, если хочешь поделиться координатами.</p></div><button type="button" class="secondary" onclick="requestLocation()">Поделиться местоположением</button></div><p class="form-note">Геолокация запрашивается только по нажатию и с разрешения браузера. Координаты попадут в текст заказа, который клиент сам решит отправить. Онлайн-оплата и автоматическая отправка пока не подключены.</p><button class="primary wide" onclick="copyOrder()">Подготовить заказ</button></div></div>
+<div class="overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()"><div class="drawer"><div class="drawer-head"><h2>Твой заказ 🛒</h2><button class="close" onclick="closeCart()">×</button></div><div id="cartLines"></div><div class="cart-total"><span>Итого</span><span id="cartTotal">0 сум</span></div><div class="form-grid"><label>Имя<input id="customerName" placeholder="Как к тебе обращаться?"></label><label>Телефон для связи<input id="customerPhone" type="tel" placeholder="+998 ..."></label><label>Получение заказа<select id="fulfillment"><option value="delivery">Доставка</option><option value="pickup">Самовывоз</option></select></label><label>Адрес доставки<textarea id="customerAddress" placeholder="Город, улица, дом, квартира, ориентир"></textarea></label><label>Способ оплаты<select id="paymentMethod"><option value="cash">Наличными при получении</option><option value="card_courier">Картой курьеру (если доступно)</option><option value="click">Click (подключение оплаты отдельно)</option><option value="payme">Payme (подключение оплаты отдельно)</option></select></label><label>Комментарий курьеру<textarea id="customerComment" placeholder="Подъезд, этаж, домофон или другие пожелания"></textarea></label></div><div class="geo-panel"><div><b>📍 Геолокация для курьера</b><p id="geoStatus">Не отправлена. Нажми кнопку, если хочешь поделиться координатами.</p></div><button type="button" class="secondary" onclick="requestLocation()">Поделиться местоположением</button></div><p class="form-note">Геолокация запрашивается только по нажатию и с разрешения браузера. Координаты сохраняются только если клиент сам разрешил доступ. Онлайн-оплата пока не подключена.</p><button class="primary wide" onclick="copyOrder()">Подготовить заказ</button></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 let products=[
@@ -141,13 +141,28 @@ function updateCart(){
 }
 function openCart(){document.getElementById("cartOverlay").classList.add("open");document.body.style.overflow="hidden";}
 function closeCart(){document.getElementById("cartOverlay").classList.remove("open");document.body.style.overflow="";}
-function copyOrder(){
+async function copyOrder(){
  const ids=Object.keys(cart);if(!ids.length){alert("Сначала добавь блюда в корзину.");return;}
- const total=ids.reduce((s,id)=>s+products.find(p=>p.id==id).price*cart[id],0);
- const coords=customerCoordinates?("https://www.google.com/maps?q="+customerCoordinates.lat+","+customerCoordinates.lng):"не предоставлена";
- const lines=["ЗАКАЗ — ORANGE PIZZA & FAST FOOD","Имя: "+(document.getElementById("customerName").value||"не указано"),"Телефон: "+(document.getElementById("customerPhone").value||"не указан"),"Получение: "+document.getElementById("fulfillment").value,"Адрес: "+(document.getElementById("customerAddress").value||"не указан"),"Комментарий курьеру: "+(document.getElementById("customerComment").value||"нет"),"Оплата: "+document.getElementById("paymentMethod").value,"Геолокация (по согласию клиента): "+coords,"","Товары:",...ids.map(id=>{const p=products.find(x=>x.id==id);return p.name+" × "+cart[id]+" — "+money(p.price*cart[id]);}),"ИТОГО: "+money(total)];
- const value=lines.join("\n");
- if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(()=>alert("Заказ подготовлен и скопирован. Отправь его заведению удобным способом.")).catch(()=>window.prompt("Скопируй заказ:",value));}else{window.prompt("Скопируй заказ:",value);}
+ const btn=document.querySelector('button[onclick="copyOrder()"]');btn.disabled=true;btn.textContent="Отправляем заказ…";
+ const payload={
+  customer_name:document.getElementById("customerName").value,
+  customer_phone:document.getElementById("customerPhone").value,
+  fulfillment_type:document.getElementById("fulfillment").value,
+  delivery_address:document.getElementById("customerAddress").value,
+  payment_method:document.getElementById("paymentMethod").value,
+  customer_comment:document.getElementById("customerComment").value,
+  customer_latitude:customerCoordinates?.lat??null,
+  customer_longitude:customerCoordinates?.lng??null,
+  items:ids.map(id=>({id:Number(id),quantity:cart[id]}))
+ };
+ try{
+  const {data,error}=await dbClient.functions.invoke("create-order",{body:payload});
+  if(error)throw error;
+  if(!data?.ok)throw new Error(data?.error||"Не удалось оформить заказ");
+  alert("Заказ №"+data.order.order_number+" принят! Сумма: "+money(data.order.total_uzs)+".");
+  cart={};updateCart();closeCart();
+ }catch(err){alert(err.message||"Не удалось отправить заказ. Проверь данные и попробуй ещё раз.");}
+ finally{btn.disabled=false;btn.textContent="Оформить заказ";}
 }
 let customerCoordinates=null;
 function requestLocation(){
@@ -159,10 +174,11 @@ function requestLocation(){
 
 const SUPABASE_URL="https://seqwmjflzosqheeariil.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_eco7kq2kY0A_Xf28ijedyg_lGqlDLgd";
+const dbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 async function loadSupabaseCatalog(){
  try{
   if(!window.supabase?.createClient) return;
-  const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  const db=dbClient;
   const {data,error}=await db.from("products").select("id,category,name,description,price_uzs,image_url,tag").eq("is_active",true).order("id");
   if(error) throw error;
   if(Array.isArray(data)&&data.length){
