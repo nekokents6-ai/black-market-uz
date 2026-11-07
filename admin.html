@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ORANGE — Админ-панель</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';"></script>
 <style>
 :root{font-family:Inter,Arial,sans-serif;color:#222;background:#fff8f0}*{box-sizing:border-box}body{margin:0}header{background:#ff7417;color:white;padding:22px max(18px,calc((100% - 1120px)/2));display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:24px}.wrap{max-width:1120px;margin:28px auto;padding:0 16px}.panel{background:white;border:1px solid #f0dfd1;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 5px 22px #5a260b0a}input,select,textarea{width:100%;padding:11px;border:1px solid #ddcfc4;border-radius:9px;font:inherit;margin:5px 0 12px}button{border:0;border-radius:9px;padding:11px 15px;background:#ff7417;color:white;font-weight:700;cursor:pointer}button.secondary{background:#fff0e4;color:#a84700}button.danger{background:#b83225}button:disabled{opacity:.5;cursor:wait}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.rowitem{border-top:1px solid #eee;padding:14px 0;display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap}.muted{color:#786d65;font-size:13px}.hidden{display:none!important}.error{color:#b83225}.success{color:#167b42}.orderitems{white-space:pre-line;font-size:14px}.price{font-weight:800;color:#d65a00}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}label{font-size:14px;font-weight:650}
 </style></head><body>
@@ -18,7 +18,7 @@ const URL="https://seqwmjflzosqheeariil.supabase.co";
 const KEY="sb_publishable_eco7kq2kY0A_Xf28ijedyg_lGqlDLgd";
 let db=null;
 try {
-  if(!window.supabase?.createClient) throw new Error("Supabase JS не загрузился. Проверь подключение к интернету или блокировщик.");
+  if(!window.supabase?.createClient) throw new Error("Библиотека Supabase не загрузилась с CDN. Возможно, браузер или сеть блокирует unpkg/jsDelivr.");
   db=window.supabase.createClient(URL,KEY);
 } catch(e) {
   window.addEventListener("DOMContentLoaded",()=>{const m=document.getElementById("loginMsg");if(m)m.textContent=e.message;});
