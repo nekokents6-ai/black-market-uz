@@ -55,8 +55,9 @@ footer{padding:35px 0 22px;background:#1d1c1a;color:white}.footer-grid{display:f
 </main>
 <footer><div class="container"><div class="footer-grid"><div class="footer-brand"><a class="logo" href="#"><span class="logo-mark">🍕</span><span>ORANGE<small style="color:#aaa">PIZZA & FAST FOOD</small></span></a><p>Вкусная пицца и фастфуд рядом с домом. ORANGE — самостоятельный проект. Меню и цены использованы как справочный образец по открытым данным Mix Burger.</p></div><div class="footer-links"><a href="#menu">Меню</a><a href="#about">О нас</a><a href="#contacts">Контакты</a></div></div><div class="footer-bottom"><span>© 2026 ORANGE Pizza & Fast Food · Каталог составлен по открытым данным Mix Burger</span><span>*Доставка и время работы уточняются у заведения.</span></div></div></footer>
 <div class="overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()"><div class="drawer"><div class="drawer-head"><h2>Твой заказ 🛒</h2><button class="close" onclick="closeCart()">×</button></div><div id="cartLines"></div><div class="cart-total"><span>Итого</span><span id="cartTotal">0 сум</span></div><div class="form-grid"><label>Имя<input id="customerName" placeholder="Как к тебе обращаться?"></label><label>Телефон для связи<input id="customerPhone" type="tel" placeholder="+998 ..."></label><label>Получение заказа<select id="fulfillment"><option value="Доставка">Доставка</option><option value="Самовывоз">Самовывоз</option></select></label><label>Адрес доставки<textarea id="customerAddress" placeholder="Город, улица, дом, квартира, ориентир"></textarea></label><label>Способ оплаты<select id="paymentMethod"><option value="Наличными при получении">Наличными при получении</option><option value="Картой курьеру (если доступно)">Картой курьеру (если доступно)</option><option value="Click (будет подключён позже)">Click (будет подключён позже)</option><option value="Payme (будет подключён позже)">Payme (будет подключён позже)</option></select></label><label>Комментарий курьеру<textarea id="customerComment" placeholder="Подъезд, этаж, домофон или другие пожелания"></textarea></label></div><div class="geo-panel"><div><b>📍 Геолокация для курьера</b><p id="geoStatus">Не отправлена. Нажми кнопку, если хочешь поделиться координатами.</p></div><button type="button" class="secondary" onclick="requestLocation()">Поделиться местоположением</button></div><p class="form-note">Геолокация запрашивается только по нажатию и с разрешения браузера. Координаты попадут в текст заказа, который клиент сам решит отправить. Онлайн-оплата и автоматическая отправка пока не подключены.</p><button class="primary wide" onclick="copyOrder()">Подготовить заказ</button></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const products=[
+let products=[
 {"id":1,"cat":"new","name":"Болажон наггетс бокс","desc":"110 г · по опубликованному меню Mix Burger","price":45000,"img":"https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80","tag":"Новый продукт"},
 {"id":2,"cat":"new","name":"Болажон бургер бокс","desc":"110 г · по опубликованному меню Mix Burger","price":45000,"img":"https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80","tag":"Новый продукт"},
 {"id":3,"cat":"new","name":"Мини пицца-бокс","desc":"1 кг · по опубликованному меню Mix Burger","price":100000,"img":"https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80","tag":"Новый продукт"},
@@ -155,7 +156,23 @@ function requestLocation(){
  status.textContent="Ожидаем разрешение браузера…";
  navigator.geolocation.getCurrentPosition(pos=>{customerCoordinates={lat:pos.coords.latitude,lng:pos.coords.longitude};status.textContent="Геолокация получена. Она будет добавлена в текст заказа.";},err=>{customerCoordinates=null;status.textContent=err.code===1?"Доступ запрещён. Можно ввести адрес вручную.":"Не удалось определить местоположение. Введи адрес вручную.";},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 }
-renderMenu();updateCart();
+
+const SUPABASE_URL="https://seqwmjflzosqheeariil.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_eco7kq2kY0A_Xf28ijedyg_lGqlDLgd";
+async function loadSupabaseCatalog(){
+ try{
+  if(!window.supabase?.createClient) return;
+  const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  const {data,error}=await db.from("products").select("id,category,name,description,price_uzs,image_url,tag").eq("is_active",true).order("id");
+  if(error) throw error;
+  if(Array.isArray(data)&&data.length){
+   products=data.map(p=>({id:p.id,cat:p.category,name:p.name,desc:p.description||"",price:p.price_uzs,img:p.image_url||"",tag:p.tag||""}));
+   renderMenu(document.querySelector(".filter.active")?.dataset.cat||"all");
+   updateCart();
+  }
+ }catch(error){console.warn("Не удалось загрузить каталог Supabase; используется локальная копия.",error);}
+}
+renderMenu();updateCart();loadSupabaseCatalog();
 </script>
 </body>
 </html>
