@@ -98,7 +98,7 @@ function copyOrder(){
  const total=ids.reduce((s,id)=>s+products.find(p=>p.id==id).price*cart[id],0);
  const coords=customerCoordinates?("https://www.google.com/maps?q="+customerCoordinates.lat+","+customerCoordinates.lng):"не предоставлена";
  const lines=["ЗАКАЗ — ORANGE PIZZA & FAST FOOD","Имя: "+(document.getElementById("customerName").value||"не указано"),"Телефон: "+(document.getElementById("customerPhone").value||"не указан"),"Получение: "+document.getElementById("fulfillment").value,"Адрес: "+(document.getElementById("customerAddress").value||"не указан"),"Комментарий курьеру: "+(document.getElementById("customerComment").value||"нет"),"Оплата: "+document.getElementById("paymentMethod").value,"Геолокация (по согласию клиента): "+coords,"","Товары:",...ids.map(id=>{const p=products.find(x=>x.id==id);return p.name+" × "+cart[id]+" — "+money(p.price*cart[id]);}),"ИТОГО: "+money(total)];
- const value=lines.join("\\n");
+ const value=lines.join("\n");
  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(()=>alert("Заказ подготовлен и скопирован. Отправь его заведению удобным способом.")).catch(()=>window.prompt("Скопируй заказ:",value));}else{window.prompt("Скопируй заказ:",value);}
 }
 let customerCoordinates=null;
